@@ -42,10 +42,13 @@ let rec count_ketueki_A lst = match lst with
         -> if bt = "A" then 1 + count_ketueki_A rest
                         else count_ketueki_A rest;; *)
 
-let rec person_sort lst = match lst with
+(* let rec person_sort lst = match lst with
     [] -> []
     | first :: rest
-        -> if first.name > person_sort lst
+        -> if first.name > person_sort lst *)
+
+let person_get_name t = t.name;;
+let person_name lst = List.map person_get_name lst;;
 
 let lst1 = []
 let lst2 = [{
@@ -97,7 +100,7 @@ let lst4 = [{
     blood_type = "B"
 } ]
 
-let test1 = count_ketueki_A lst1 = 0
-let test2 = count_ketueki_A lst2 = 1
-let test3 = count_ketueki_A lst3 = 1
-let test4 = count_ketueki_A lst4 = 2
+let test1 = person_name lst1 = []
+let test2 = person_name lst2 =  ["akira"]
+let test3 = person_name lst3 =  ["akira" ; "akira"]
+let test4 = person_name lst4 = ["akira" ; "akira" ; "akira"]
