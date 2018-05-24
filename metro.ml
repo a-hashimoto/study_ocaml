@@ -415,14 +415,6 @@ let seiretsu l = match l with
 
 (* 13-6 *)
 (* koushin1 eki_t -> eki_t*)
-let koushin1 p q = 
-  let length = get_ekikan_kyori q.namae p.namae global_ekikan_list in
-   if length = infinity
-  then q
-  else let new_length = p.saitan_kyori +. length in
-    if new_length > q.saitan_kyori 
-      then q
-      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.name ::  p.temae_list}
 
 let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;;
 (*  *)
@@ -430,4 +422,13 @@ let test1 = let {}
 
 (* 13-7 *)
 (* koushin defined_eki -> eki list -> eki list *)
-let koushin p v -> List.map (koushin1 p) v ;;
+let koushin p v =
+  let koushin1 p q = 
+  let length = get_ekikan_kyori q.namae p.namae global_ekikan_list in
+   if length = infinity
+  then q
+  else let new_length = p.saitan_kyori +. length in
+    if new_length > q.saitan_kyori 
+      then q
+      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.name ::  p.temae_list} in
+   List.map (koushin1 p) v ;;
