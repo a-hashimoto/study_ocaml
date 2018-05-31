@@ -57,3 +57,33 @@ let count l s =
 
 (* let test = count [student1; student1] "SSR" = 2;; *)
 
+(* 14.8 *)
+(* no_name_fun int -> int *)
+fun x -> x * x - 1;;
+
+(* 14.9 *)
+(* 人間一人分のデータ (身長、体重、誕生日の月と日、血液型)を表す型*)
+type person_t = {
+    name : string; (* 名前 *)
+    height : int; (*身長*)
+    weight : int; (*体重*)
+    birthday_month : int; (*誕生日の月*)
+    birthday_day : int; (*誕生日の日*)
+    blood_type : string; (*血液型*)
+};;
+
+
+let akira = {
+    name = "akira";
+    height = 169;
+    weight = 66;
+    birthday_month = 3;
+    birthday_day = 10;
+    blood_type = "A"
+};;
+
+(* fun person_t -> string *)
+fun p -> p.name;;
+
+(* 14.10 *)
+

@@ -352,8 +352,8 @@ let global_ekikan_list = [
 {kiten="営団赤塚"; shuten="営団成増"; keiyu="有楽町線"; kyori=1.5; jikan=2}; 
 {kiten="営団成増"; shuten="和光市"; keiyu="有楽町線"; kyori=2.1; jikan=3}; 
 ] 
-  (* 10-10 ローマ字の駅名と駅名リストを受け取ったら駅の漢字表記の文字列を返す *)
- (* romaji_to_list string ekimei_t list -> string *)
+(* 10-10 ローマ字の駅名と駅名リストを受け取ったら駅の漢字表記の文字列を返す *)
+(* romaji_to_list string ekimei_t list -> string *)
 let rec romaji_to_list romaji lst = match lst with
 [] -> ""
 | first :: rest -> if romaji = first.romaji then first.kanji
@@ -403,22 +403,39 @@ let test1 = make_eki_list global_ekimei_short_list = [{namae = "代々木上原"
 
 (* 12-3 *)
 (* shokika eki_t list -> eki_t list *)
-(* let shokika eki = {namae = eki.namae; saitan_kyori = 0.0; temae_list = [eki.namae]};;
+ let shokika eki = {namae = eki.namae; saitan_kyori = 0.0; temae_list = [eki.namae]};;
 let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;;
-let test1 = shokika eki_yyg = {namae = "代々木上原"; saitan_kyori = 0.0; temae_list = ["代々木上原"]};; *)
+let test1 = shokika eki_yyg = {namae = "代々木上原"; saitan_kyori = 0.0; temae_list = ["代々木上原"]};; 
 
 (* 12-4 *)
-(* seiretsu ekimei_t -> ekimei_t *)
-let seiretsu l = match l with
+(* seiretsu ekimei_t list-> ekimei_t list *)
+ let rec insert lst s = match lst with
+[] -> s :: []
+| first :: rest -> if first.kana < s.kana then first :: (insert rest s)
+                   else if first.kana = s.kana then insert rest s   
+                                        else s :: lst ;;
+let rec seiretsu l = match l with
 [] -> []
-| first :: rest 
+| first :: rest -> insert (seiretsu rest) first ;;
+
+let global_ekimei_short_list = [ 
+{kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
+{kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
+{kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
+{kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
+{kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
+]
+
+let test = seiretsu global_ekimei_short_list = [
+{kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
+{kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
+]
 
 (* 13-6 *)
 (* koushin1 eki_t -> eki_t*)
 
 let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;;
 (*  *)
-let test1 = let {}
 
 (* 13-7 *)
 (* koushin defined_eki -> eki list -> eki list *)
@@ -430,5 +447,5 @@ let koushin p v =
   else let new_length = p.saitan_kyori +. length in
     if new_length > q.saitan_kyori 
       then q
-      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.name ::  p.temae_list} in
+      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.namae ::  p.temae_list} in
    List.map (koushin1 p) v ;;
