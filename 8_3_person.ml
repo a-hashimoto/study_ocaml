@@ -25,14 +25,14 @@ let test1 = blood_type_comment {
     blood_type = "A"
 } = "akiraさんの血液型はA型です" *)
 
-(* 
+(*  
 let akira = {
     height = 169;
     weight = 66;
     birthday_month = 3;
     birthday_day = 10;
     blood_type = "A"
-} *)
+}  *)
 
 (* count_ketsueki_A : person_t list -> int *)
 (* 

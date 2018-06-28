@@ -390,22 +390,35 @@ let test = kyori_wo_hyoji "myogadan" "shinotsuka" = "myogadanという駅は存�
 
 (* 12-2 *)
 (* make_eki_list ekimei_t list -> eki_t list *)
-let rec make_eki_list l = match l with
+(* let rec make_eki_list l = match l with
 [] -> []
-| first :: rest -> {namae = first.kanji; saitan_kyori = infinity; temae_list = []} :: make_eki_list rest;;
-(* let global_ekimei_short_list = [ 
+| first :: rest -> {namae = first.kanji; saitan_kyori = infinity; temae_list = []} :: make_eki_list rest;; *)
+
+let make_eki_list l = List.map (fun s -> {namae = s.kanji; saitan_kyori = infinity; temae_list = []}) l;;
+ (* let global_ekimei_short_list = [ 
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
 {kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
 ]
 let test1 = make_eki_list global_ekimei_short_list = [{namae = "代々木上原"; saitan_kyori = infinity; temae_list = []};
 {namae = "代々木公園"; saitan_kyori = infinity; temae_list = []}
-] *)
+]  *)
 
 (* 12-3 *)
 (* shokika eki_t list -> eki_t list *)
- let shokika eki = {namae = eki.namae; saitan_kyori = 0.0; temae_list = [eki.namae]};;
-let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;;
-let test1 = shokika eki_yyg = {namae = "代々木上原"; saitan_kyori = 0.0; temae_list = ["代々木上原"]};; 
+let shokika l eki_s = List.map(fun s -> if eki_s = s.namae then{namae = s.namae; saitan_kyori = 0.0; temae_list = [s.namae]} else s) l;;
+
+(* 14.12 *)
+(* make_initial_eki_list eki_list eki -> eki_list *)
+(* let make_initial_eki_list l eki_s = 
+  List.map (fun s -> if eki_s = s.namae then{namae = s.namae; saitan_kyori = 0.0; temae_list = [s.namae]} else s)
+  List.map (fun s -> {namae = s.kanji; saitan_kyori = infinity; temae_list = []}) l;; *)
+
+(* let shokika l = match l with
+[] -> []
+| first :: rest -> {namae = first.namae; saitan_kyori = 0.0; temae_list = [first.namae]} :: rest;;
+  {namae = eki.namae; saitan_kyori = 0.0; temae_list = [eki.namae]};;
+let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;; *)
+(* let test1 = shokika eki_yyg = {namae = "代々木上原"; saitan_kyori = 0.0; temae_list = ["代々木上原"]};; *)
 
 (* 12-4 *)
 (* seiretsu ekimei_t list-> ekimei_t list *)
@@ -418,7 +431,7 @@ let rec seiretsu l = match l with
 [] -> []
 | first :: rest -> insert (seiretsu rest) first ;;
 
-let global_ekimei_short_list = [ 
+(* let global_ekimei_short_list = [ 
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
 {kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
@@ -429,19 +442,31 @@ let global_ekimei_short_list = [
 let test = seiretsu global_ekimei_short_list = [
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
 {kanji="代々木公園"; kana="よよぎこうえん"; romaji="yoyogikouen"; shozoku="千代田線"}; 
-]
+] *)
 
 (* 13-6 *)
 (* koushin1 eki_t -> eki_t*)
 
 let eki_yyg = {namae = "代々木上原"; saitan_kyori = infinity; temae_list = []} ;;
+
+
+
+let a = {namae = "a"; saitan_kyori = 1.0; temae_list = []} ;;
+let b = {namae = "b"; saitan_kyori = 2.0; temae_list = []} ;;
+let c = {namae = "c"; saitan_kyori = 3.0; temae_list = []} ;;
+let d = {namae = "d"; saitan_kyori = 4.0; temae_list = []} ;;
+let e = {namae = "e"; saitan_kyori = 5.0; temae_list = []} ;;
+
 (*  *)
 
 (* 13-7 *)
-(* koushin defined_eki -> eki list -> eki list *)
-let koushin p v =
+(* 14 - 7 *)
+(* 14-13 *)
+(* 16-3 *)
+(* koushin defined_eki ekikan_t -> eki list -> eki list *)
+let koushin p v l=
   let koushin1 p q = 
-  let length = get_ekikan_kyori q.namae p.namae global_ekikan_list in
+  let length = get_ekikan_kyori q.namae p.namae l in
    if length = infinity
   then q
   else let new_length = p.saitan_kyori +. length in
@@ -449,3 +474,71 @@ let koushin p v =
       then q
       else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.namae ::  p.temae_list} in
    List.map (koushin1 p) v ;;
+
+let test = koushin a [b; c; d; e] global_ekikan_list ;;
+(* 14.14 *)
+(* let koushin p v =
+  let koushin1 q = 
+  let length = get_ekikan_kyori q.namae p.namae global_ekikan_list in
+   if length = infinity
+  then q
+  else let new_length = p.saitan_kyori +. length in
+    if new_length > q.saitan_kyori 
+      then q
+      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.namae ::  p.temae_list} in
+   List.map (fun koushin1 q = 
+  let length = get_ekikan_kyori q.namae p.namae global_ekikan_list in
+   if length = infinity
+  then q
+  else let new_length = p.saitan_kyori +. length in
+    if new_length > q.saitan_kyori 
+      then q
+      else {namae = q.namae; saitan_kyori = new_length ; temae_list = q.namae ::  p.temae_list} in) v ;; *)
+
+(* 15.4 *)
+(* saitan_wo_bunri eki_t lst *)
+(* let rec minimum_eki l = match l with
+[] -> max_float
+| first :: rest -> if first.saitan_kyori < minimum_eki rest 
+then first .saitan_kyori
+else minimum_eki rest;;
+let rec shukei_eki eki l = match l with
+[] -> []
+| first :: rest -> if first.saitan_kyori = eki.saitan_kyori 
+then shukei_eki eki rest 
+else first :: shukei_eki eki rest;;
+let saitan_wo_bunri l = 
+  let minimum = minimum_eki l in
+  (minimum, shukei_eki minimum l);; *)
+
+(* let saitan_bunri a kumi = match kumi with
+  (b, c) -> if a.saitan_kyori < b.saitan_kyori then (a, b :: c) else (b, a :: c);; *)
+let saitan_wo_bunri l = match l with
+[] -> ({namae = ""; saitan_kyori = max_float; temae_list = []}, [])
+| first :: rest -> List.fold_right (fun a kumi -> match kumi with
+  (b, c) -> if a.saitan_kyori < b.saitan_kyori then (a, b :: c) else (b, a :: c)) rest (first, []);;
+
+let test = saitan_wo_bunri [a; b] = (a , [b]);;
+
+let yueki = {
+  namae = "代々木上原"; saitan_kyori = 0.; temae_list = ["代々木上原"]
+}
+
+let ykeki = {
+  namae = "代々木公園"; saitan_kyori = max_float; temae_list = []
+}
+
+let mjeki = {
+  namae = "明治神宮前"; saitan_kyori = max_float; temae_list = []
+}
+
+(* 16-4 *)
+(* dijkstra_main eki_t list ekikan_t list -> eki_t list *)
+let dijkstra_main elst eklst = 
+  let rec hojo rlst dlst = match saitan_wo_bunri rlst with
+  (a, b) -> match b with
+  [] -> a :: dlst
+  | first :: rest -> hojo (koushin a b eklst) (a :: dlst)
+  in hojo elst [];;
+
+  let test = dijkstra_main [yueki ; ykeki; mjeki] global_ekikan_list;;

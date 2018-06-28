@@ -1,7 +1,8 @@
 (* concat string list -> string  *)
-let rec concat lst = match lst with
+(* let rec concat lst = match lst with
 [] -> ""
-| first :: rest -> first ^ concat rest;;
+| first :: rest -> first ^ concat rest;; *)
+let concat lst = List.fold_right (^) lst "";;
 
 let test1 = concat[] = "";;
 let test2 = concat["a"] = "a";;

@@ -87,3 +87,14 @@ fun p -> p.name;;
 
 (* 14.10 *)
 
+(* 14.15 *)
+let rec enumerate n = if n = 0 then [] else n :: enumerate(n-1);;
+
+(* one_to_n int -> int *)
+let one_to_n n = List.fold_right (+) (enumerate n) 0;;
+(* let test = one_to_n 3 = 6;; *)
+
+(* 14.16 *)
+(* fac int -> int *)
+let fac n = List.fold_right ( * ) (enumerate n) 1;;
+let test = fac 3 = 6;;
