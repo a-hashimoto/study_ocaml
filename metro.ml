@@ -353,14 +353,14 @@ let global_ekikan_list = [
 {kiten="営団成増"; shuten="和光市"; keiyu="有楽町線"; kyori=2.1; jikan=3}; 
 ] 
 (* 10-10 ローマ字の駅名と駅名リストを受け取ったら駅の漢字表記の文字列を返す *)
-(* romaji_to_list string ekimei_t list -> string *)
-let rec romaji_to_list romaji lst = match lst with
+(* romaji_to_kanji string ekimei_t list -> string *)
+let rec romaji_to_kanji romaji lst = match lst with
 [] -> ""
 | first :: rest -> if romaji = first.romaji then first.kanji
-                                            else romaji_to_list romaji rest ;; 
+                                            else romaji_to_kanji romaji rest ;; 
 
-(* let test1 = romaji_to_list "yoyogiuehara" global_ekimei_list = "代々木上原"
-let test2 = romaji_to_list "yoyogiuehar" global_ekimei_list = ""  *)
+(* let test1 = romaji_to_kanji "yoyogiuehara" global_ekimei_list = "代々木上原"
+let test2 = romaji_to_kanji "yoyogiuehar" global_ekimei_list = ""  *)
 (* 10-11 *)
 (* get_ekikan_kyori : string -> string -> ekikan_t list -> float *)
 (* 漢字の駅名を二つ、ekikanのリストを受け取り、隣接する二駅の距離を返す *)
@@ -375,8 +375,8 @@ let test = get_ekikan_kyori "茗荷谷" "大塚" global_ekikan_list = infinity *
 (*ローマ字の駅名を受け取ったら、その間の距離を調べ、直接繋がっている場合は文字列返す  *)
 (* kyori_wo_hyoji ; x :string -> y : string -> z:string *)
  let kyori_wo_hyoji x y = 
-  let eki1 = romaji_to_list x global_ekimei_list in 
-    let eki2 = romaji_to_list y global_ekimei_list in
+  let eki1 = romaji_to_kanji x global_ekimei_list in 
+    let eki2 = romaji_to_kanji y global_ekimei_list in
       if eki1 = "" then x ^ "という駅は存在しません"
                     else if eki2 = "" then y ^ "という駅は存在しません"
       else let kyori = get_ekikan_kyori eki1 eki2 global_ekikan_list in
@@ -407,11 +407,11 @@ let test1 = make_eki_list global_ekimei_short_list = [{namae = "代々木上原"
 (* shokika eki_t list -> eki_t list *)
 let shokika l eki_s = List.map(fun s -> if eki_s = s.namae then{namae = s.namae; saitan_kyori = 0.0; temae_list = [s.namae]} else s) l;;
 
-(* 14.12 *)
+(* 14-12 *)
 (* make_initial_eki_list eki_list eki -> eki_list *)
-(* let make_initial_eki_list l eki_s = 
+ let make_initial_eki_list l eki_s = 
   List.map (fun s -> if eki_s = s.namae then{namae = s.namae; saitan_kyori = 0.0; temae_list = [s.namae]} else s)
-  List.map (fun s -> {namae = s.kanji; saitan_kyori = infinity; temae_list = []}) l;; *)
+  (List.map (fun s -> {namae = s.kanji; saitan_kyori = infinity; temae_list = []}) l);; 
 
 (* let shokika l = match l with
 [] -> []
@@ -534,7 +534,7 @@ let mjeki = {
 
 (* 16-4 *)
 (* dijkstra_main eki_t list ekikan_t list -> eki_t list *)
-let dijkstra_main elst eklst = 
+let s elst eklst = 
   let rec hojo rlst dlst = match saitan_wo_bunri rlst with
   (a, b) -> match b with
   [] -> a :: dlst
@@ -542,3 +542,20 @@ let dijkstra_main elst eklst =
   in hojo elst [];;
 
   let test = dijkstra_main [yueki ; ykeki; mjeki] global_ekikan_list;;
+
+  (* 16-5 *)
+  (* dijkstra string string *)
+  (* seiretsu *)
+let dijkstra start last =
+    let s_global_ekimei_list = seiretsu global_ekimei_list in
+    let start_kanji = romaji_to_kanji start s_global_ekimei_list in
+    let end_kanji = romaji_to_kanji last s_global_ekimei_list in 
+    let shoki_list = make_initial_eki_list s_global_ekimei_list start_kanji in
+    let done_list = dijkstra_main shoki_list global_ekikan_list in
+    let rec check_last lst = match lst with
+    [] -> mjeki
+    | first :: rest -> if first.namae = end_kanji then first
+    else check_last rest in
+    check_last done_list;;
+
+let test = dijkstra "ikebukuro" "meguro";;
