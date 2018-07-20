@@ -19,6 +19,10 @@ type eki_t = {
    saitan_kyori : float; (* 最短距離 *)
    temae_list : string list; (* 駅名のリスト *)
 }
+
+(* 17.10 *)
+type ekikan_tree_t = Empty |
+                Node of string * (string * float) list * ekikan_tree_t * ekikan_tree_t;;
  
 let global_ekimei_list = [ 
 {kanji="代々木上原"; kana="よよぎうえはら"; romaji="yoyogiuehara"; shozoku="千代田線"}; 
@@ -559,3 +563,4 @@ let dijkstra start last =
     check_last done_list;;
 
 let test = dijkstra "ikebukuro" "meguro";;
+
